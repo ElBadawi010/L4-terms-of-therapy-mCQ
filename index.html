@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4 MCQ Exam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #008080; --secondary: #004d4d; --accent: #ff9800; --bg: #f0f4f8; --text: #2d3436; --white: #ffffff; --success: #2ecc71; --error: #e74c3c; --gray: #7f8fa6; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: var(--white); width: 95%; max-width: 700px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; text-align: center; position: relative; }
+        
+        header h1 { color: var(--primary); margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; }
+        .btn { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px 30px; font-size: 1rem; border-radius: 50px; cursor: pointer; font-family: 'Poppins', sans-serif; margin-top: 15px; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,128,128,0.3); font-weight: 600; width: 100%; max-width: 250px; }
+        .btn:hover { transform: scale(1.02); }
+        .btn-gray { background: var(--gray); box-shadow: 0 4px 15px rgba(127,143,166,0.3); }
+        .btn-gray:hover { background: #718093; }
+        .btn-warning { background: linear-gradient(45deg, #e67e22, #d35400); box-shadow: 0 4px 15px rgba(230,126,34,0.3); font-family: 'Cairo', sans-serif; font-size: 1.1rem; max-width: 100%;}
+        
+        .nav-buttons { display: flex; gap: 15px; justify-content: space-between; margin-top: 20px; }
+        .nav-buttons .btn { margin-top: 0; max-width: 48%; }
+        
+        .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; gap: 15px;}
+        .question-box { font-size: 1.1rem; font-weight: 600; text-align: left; color: var(--secondary); line-height: 1.5; margin: 0; flex-grow: 1; }
+        
+        .badge { display: inline-block; padding: 5px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: white; white-space: nowrap;}
+        .badge-easy { background-color: #2ecc71; }
+        .badge-medium { background-color: #f1c40f; color: #333; }
+        .badge-hard { background-color: #e74c3c; }
+        
+        .difficulty-selector { width: 100%; max-width: 250px; padding: 10px; margin: 15px auto; border-radius: 8px; border: 2px solid var(--primary); font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--secondary); outline: none; cursor: pointer; background: #f8f9fa; }
+        
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background: var(--white); border: 2px solid #e0e0e0; padding: 15px; border-radius: 12px; cursor: pointer; text-align: left; transition: 0.3s; font-weight: 500; color: #555; position: relative; }
+        .option-btn:hover:not(.disabled) { background: #f9f9f9; border-color: var(--primary); }
+        .option-btn.correct { background: #d4edda; border-color: var(--success); color: #155724; }
+        .option-btn.wrong { background: #f8d7da; border-color: var(--error); color: #721c24; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.9; }
+        
+        .explanation-box { display: none; background: #e8f4f8; border-right: 5px solid var(--primary); padding: 15px; margin-top: 20px; text-align: right; direction: rtl; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 1rem; line-height: 1.6; }
+        
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .progress-bar { width: 100%; height: 8px; background: #eee; margin: 20px 0; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+        
+        #retry-container { background: #fff3e0; border: 1px solid #ffe0b2; padding: 15px; border-radius: 12px; margin-top: 15px; }
+        #retry-container p { font-family: 'Cairo', sans-serif; color: #d35400; margin: 0 0 10px 0; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="start-screen" class="screen active">
+        <header>
+            <h1>ElBadawi Med Academy 🩺</h1>
+        </header>
+        <div style="margin: 25px 0;"><img src="https://cdn-icons-png.flaticon.com/512/3063/3063205.png" width="90"></div>
+        <h3 id="quiz-title-display" style="color:var(--accent);">Medical Exam</h3>
+        <p>30 MCQs | Terms of Therapy</p>
+        
+        <select id="difficulty-filter" class="difficulty-selector">
+            <option value="all">🌐 All Questions (Mix)</option>
+            <option value="easy">🟢 Easy Only</option>
+            <option value="medium">🟡 Medium Only</option>
+            <option value="hard">🔴 Hard (Clinical Scenarios)</option>
+        </select>
+
+        <button class="btn" onclick="startQuiz()">Start Challenge</button>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
+        <div id="timer" style="color:var(--error); font-weight:bold; margin-bottom:10px;"></div>
+        
+        <div class="question-header">
+            <div class="question-box" id="question-text"></div>
+            <span id="difficulty-badge" class="badge"></span>
+        </div>
+        
+        <div class="options" id="options-container"></div>
+        
+        <div id="explanation" class="explanation-box">
+            <strong>💡 دكتور السيد بيوضحلك:</strong><br>
+            <span id="explanation-text"></span>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="prev-btn" class="btn btn-gray" style="display:none;" onclick="prevQuestion()">⬅️ Previous</button>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">Next Question ➡️</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h2>Exam Complete!</h2>
+        <div style="font-size:3rem; font-weight:bold; color:var(--primary);" id="final-score">0%</div>
+        <div style="background:var(--accent); color:white; padding:5px 20px; border-radius:20px; font-weight:700; margin-bottom:20px; display:inline-block;" id="rank-text">Student</div>
+        
+        <div id="retry-container" style="display: none;">
+            <p>عندك بعض الأخطاء محتاج تراجعها وتتعلم منها يا دكتور!</p>
+            <button id="retry-btn" class="btn btn-warning" onclick="retryMistakes()">أعد محاولة الأسئلة الخاطئة 🔄</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn" onclick="location.reload()">Return to Main Menu 🔄</button>
+        </div>
+    </div>
+    <footer style="margin-top:25px; font-size:0.8rem; color:#aaa;">Prepared by: ElBadawi Med Academy</footer>
+</div>
+
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+    const quizTitle = "Chapter 4: Terms of Therapy";
+
+    const mcqQuestions = [
+        { 
+            question: "What is the literal translation of the word 'Therapy' (therap/y)?", 
+            options: ["The process of healing", "The process of treating", "The study of disease", "The condition of a wound"], 
+            correct: 1, 
+            explanation: "كلمة Therapy بتتكون من therap (treating) والـ suffix -y (process of)، يعني 'process of treating' أو عملية العلاج. [Slide 50]",
+            difficulty: "easy"
+        },
+        { 
+            question: "In medical terminology, the word 'Trauma' refers specifically to:", 
+            options: ["A lesion from an illness", "A bacterial infection", "A physical injury or an injury involving the mind", "A condition of death"], 
+            correct: 2, 
+            explanation: "الـ Trauma معناها 'wound' (جرح أو إصابة)، وبتشمل الإصابات الجسدية (physical) أو النفسية والعقلية (involving the mind). [Slide 50]",
+            difficulty: "easy"
+        },
+        { 
+            question: "The 'study of disease and suffering' is medically known as:", 
+            options: ["Traumatology", "Physiatrics", "Pharmacology", "Pathology"], 
+            correct: 3, 
+            explanation: "علم الـ Pathology هو الـ study of (-ology) disease and suffering (path). [Slide 51]",
+            difficulty: "easy"
+        },
+        { 
+            question: "What is the literal difference between 'Morbidity' and 'Mortality'?", 
+            options: ["Morbidity is a condition of illness; Mortality is a condition of death", "Morbidity is a condition of death; Mortality is a condition of illness", "Morbidity is the study of disease; Mortality is the study of wounds", "There is no difference"], 
+            correct: 0, 
+            explanation: "الـ Morbidity جاية من morbid (illness) يعني حالة مرضية، أما الـ Mortality جاية من mortal (death) يعني حالة الوفاة. [Slide 51]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The term 'Postmortem' literally translates to:", 
+            options: ["Before death", "After death", "Process of dying", "Study of death"], 
+            correct: 1, 
+            explanation: "بتتكون من post (after) و mortem (death)، يبقى معناها 'بعد الوفاة'. [Slide 51]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Who is historically known as the 'Mother of Modern Nursing' for her work during the Crimean War?", 
+            options: ["Shen Nung", "Ernest Fourneau", "Florence Nightingale", "John Hunter"], 
+            correct: 2, 
+            explanation: "Florence Nightingale هي اللي أسست التمريض الحديث وكانت ممرضة في حرب القرم. [Slide 52]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Breaking down the word 'Disinfectants', what does the prefix 'dis-' mean?", 
+            options: ["Within", "Against", "Away", "Process of"], 
+            correct: 2, 
+            explanation: "في كلمة Disinfectants، المقطع dis- معناه 'away' (إبعاد أو إزالة)، والكلمة على بعضها معناها مواد بتشيل أو بتبعد العدوى. [Slide 52]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The two broad categories of therapy mentioned in the text are:", 
+            options: ["Pathology and Traumatology", "Chemotherapy and Physiatrics", "Radiotherapy and Heliotherapy", "Pharmacy and Pharmacology"], 
+            correct: 1, 
+            explanation: "العلاج بينقسم لنوعين كبار: Chemotherapy (علاج كيميائي) و Physiatrics (علاج طبيعي باستخدام وسائل طبيعية). [Slide 53]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Medical treatment and diagnosis using 'natural, nonchemical agents' is formally known as:", 
+            options: ["Pharmacology", "Chemotherapy", "Physiatrics", "Radiotherapy"], 
+            correct: 2, 
+            explanation: "الـ Physiatrics (أو العلاج الطبيعي Physiotherapy) بيعتمد على وسائل طبيعية (physi) غير كيميائية في العلاج. [Slide 53]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The literal translation of 'Diathermy' is:", 
+            options: ["The process of applying cold", "The process of applying heat through", "The use of electrical current", "Treatment using rays"], 
+            correct: 1, 
+            explanation: "الـ dia معناها (through) والـ therm معناها (heat) والـ y معناها (process of)، يبقى تطبيق الحرارة من خلال الجسم. [Slide 54]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A patient diagnosed with a severe Vitamin D deficiency is prescribed a treatment involving the sun's rays. What is the specific clinical term for this therapy?", 
+            options: ["Radiotherapy", "Diathermy", "Heliotherapy", "Electrotherapy"], 
+            correct: 2, 
+            explanation: "الـ Heliotherapy بتستخدم أشعة الشمس (heli) عشان تعالج مشاكل زي نقص فيتامين D. [Slide 54]",
+            difficulty: "hard"
+        },
+        { 
+            question: "The term 'Cryotherapy' refers to the process of treating medical problems with:", 
+            options: ["Heat", "Electricity", "Cold", "Radiation"], 
+            correct: 2, 
+            explanation: "الـ cryo معناها 'cold' (البرودة)، يبقى الـ Cryotherapy هو العلاج بالتبريد. [Slide 54]",
+            difficulty: "medium"
+        },
+        { 
+            question: "An artificial limb added to the body is medically referred to as a(n):", 
+            options: ["Prosthesis", "Ligature", "Cybernetic organism", "Electrotherapy"], 
+            correct: 0, 
+            explanation: "الـ Prosthesis هو أي إضافة صناعية للجسم (artificial addition) زي الأطراف الصناعية. [Slide 55]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Who is known as the Father of Chinese Pharmacy and Pharmacology?", 
+            options: ["Hippocrates", "Shen Nung", "Ernest Fourneau", "Galen"], 
+            correct: 1, 
+            explanation: "الطبيب الصيني القديم Shen Nung هو اللي أُطلق عليه اللقب ده. [Slide 57]",
+            difficulty: "easy"
+        },
+        { 
+            question: "According to the text, what is the literal difference between 'Pharmacology' and 'Pharmacy'?", 
+            options: ["Pharmacology is the preparation of drugs; Pharmacy is the study of drugs", "Pharmacology is the study of drugs; Pharmacy is the preparation of drugs", "Both mean the study of drugs", "Both mean the preparation of drugs"], 
+            correct: 1, 
+            explanation: "الـ Pharmacology هي 'study of drugs' (دراسة الأدوية)، لكن الـ Pharmacy هي 'preparation of drugs' (تحضير الأدوية). [Slide 57]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Which plant is described in the text as having a narcotic effect and can induce vomiting?", 
+            options: ["Ginseng", "Willow bark", "Mandrake", "Penicillium"], 
+            correct: 2, 
+            explanation: "نبات الـ Mandrake (اللفاح) بيعمل تأثير مخدر (narcotic) وبيحفز الترجيع (vomiting). [Slide 57]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Which chemist is known for synthesizing many valuable drugs, including 'sulfa drugs'?", 
+            options: ["William Morton", "Ernest Fourneau", "René Laennec", "Shen Nung"], 
+            correct: 1, 
+            explanation: "الكيميائي الفرنسي Ernest Fourneau هو اللي قام بتصنيع العديد من الأدوية زي السلفا. [Slide 58]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The word 'Inflammation' (inflamm/a/tion) literally translates to:", 
+            options: ["A condition of healing", "A process of swelling", "A condition of a flame within", "A condition of coldness"], 
+            correct: 2, 
+            explanation: "الـ inflamm معناها (flame within) والـ tion معناها (condition of)، يعني حالة من الالتهاب أو 'اللهب الداخلي'. [Slide 59]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A patient presents with a high fever. The doctor prescribes acetylsalicylic acid. This type of drug, which acts 'against' the effects of a 'fever', is called a(n):", 
+            options: ["Antihistamine", "Analgesic", "Antipyretic", "Antibiotic"], 
+            correct: 2, 
+            explanation: "الأدوية اللي بتشتغل ضد الحرارة أو الحمى (fever/pyret) بنسميها Antipyretics (خافضات الحرارة). [Slide 60]",
+            difficulty: "hard"
+        },
+        { 
+            question: "The term 'Analgesics' refers to drugs that:", 
+            options: ["Take away all body feelings", "Create a benumbing effect", "Take away the sense of pain", "Goad or excite the central nervous system"], 
+            correct: 2, 
+            explanation: "الـ an (take away) والـ alges (pain)، يبقى Analgesics هي المسكنات اللي بتشيل الإحساس بالألم بس. [Slide 60]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Drugs like cocaine that create a powerful 'benumbing' (narc) effect are classified as:", 
+            options: ["Anesthetics", "Narcotics", "Tranquilizers", "Stimulants"], 
+            correct: 1, 
+            explanation: "المخدرات اللي بتعمل تأثير تنميل قوي (benumbing) زي الكوكايين بنسميها Narcotics. [Slide 61]",
+            difficulty: "medium"
+        },
+        { 
+            question: "A highly agitated patient in the ER needs to be calmed down, but the doctor MUST NOT decrease the patient's level of consciousness. Which class of drug is most appropriate?", 
+            options: ["Sedative", "Narcotic", "Tranquilizer", "Anesthetic"], 
+            correct: 2, 
+            explanation: "الـ Tranquilizers بتهدي المريض (calm) من غير ما تقلل الوعي (Do not decrease consciousness)، عكس الـ Sedatives. [Slide 62]",
+            difficulty: "hard"
+        },
+        { 
+            question: "In the word 'Respiratory' (respirat/ory), the root 'respirat' literally means:", 
+            options: ["Lungs", "Chest", "Breathing again", "Exhale"], 
+            correct: 2, 
+            explanation: "الـ respirat جاية من اللاتيني بمعنى 'breathing again' (التنفس مرة تانية). [Slide 62]",
+            difficulty: "hard"
+        },
+        { 
+            question: "What does the term 'Antibiotics' literally mean?", 
+            options: ["Drugs that work against toxins", "Drugs that act against the living", "Drugs that press down functions", "Drugs that excite the nervous system"], 
+            correct: 1, 
+            explanation: "الـ anti (against) والـ bio (living)، يبقى مضادات حيوية بتشتغل ضد الكائنات الحية الدقيقة (الميكروبات). [Slide 62]",
+            difficulty: "medium"
+        },
+        { 
+            question: "According to the case history, a 'Barbiturate' is categorized as a type of:", 
+            options: ["Central nervous system stimulant", "Central nervous system depressant", "Tranquilizer", "Analgesic"], 
+            correct: 1, 
+            explanation: "الـ Barbiturate بيعتبر CNS depressant يعني مثبط للجهاز العصبي المركزي. [Slide 65]",
+            difficulty: "medium"
+        },
+        { 
+            question: "A patient suffering from amphetamine poisoning displays an inappropriate feeling of 'well-being'. The clinical term for this is:", 
+            options: ["Delirium", "Hallucination", "Euphoria", "Addiction"], 
+            correct: 2, 
+            explanation: "الشعور غير المناسب بالراحة والسعادة الزايدة (inappropriate feeling of well-being) اسمه Euphoria (النشوة). [Slide 65]",
+            difficulty: "easy"
+        },
+        { 
+            question: "The literal meaning of the word 'Addiction' (addict/ion) is:", 
+            options: ["The process of withdrawing", "A process of giving over to", "A condition of craving", "A condition of well-being"], 
+            correct: 1, 
+            explanation: "كلمة Addiction متكونة من addict (giving over to) والـ ion (process of)، يعني الاستسلام التام أو الإدمان لشيء معين. [Slide 65]",
+            difficulty: "hard"
+        },
+        { 
+            question: "When a drug is administered 'Intravenous' (IV), the prefix 'intra-' means:", 
+            options: ["Around", "Between", "Within", "Under"], 
+            correct: 2, 
+            explanation: "الـ intra معناها 'within' والـ ven معناها 'vein'، يعني الحقن جوه الوريد. [Slide 65]",
+            difficulty: "easy"
+        },
+        { 
+            question: "A patient in the ICU shows signs of extreme 'raving' or 'craziness'. The medical term for this presence is:", 
+            options: ["Hallucinations", "Euphoria", "Delirium", "Convulsions"], 
+            correct: 2, 
+            explanation: "الـ Delirium (الهذيان) معناه الحرفي 'presence of extreme raving or craziness' (deliri). [Slide 66]",
+            difficulty: "medium"
+        },
+        { 
+            question: "A patient is rushed to the hospital with a heart rate significantly above normal. The root 'cardi' means heart, and 'tachy' means:", 
+            options: ["Slow", "Fast", "Irregular", "Stopped"], 
+            correct: 1, 
+            explanation: "الـ tachy معناها 'fast' (سريع)، والـ cardi (heart)، يبقى Tachycardia معناها تسارع ضربات القلب. [Slide 66]",
+            difficulty: "hard"
+        }
+    ];
+
+    let userAnswers = [];
+    let questionQueue = [];
+    let currentQueueIndex = 0;
+    let timer;
+    const timePerQuestion = 60; 
+
+    document.getElementById('quiz-title-display').innerText = quizTitle;
+
+    function startQuiz() {
+        if(mcqQuestions.length === 0) {
+            alert("No questions found! Please add questions to the array.");
+            return;
+        }
+
+        const selectedDifficulty = document.getElementById('difficulty-filter').value;
+        questionQueue = [];
+        
+        mcqQuestions.forEach((q, index) => {
+            if (selectedDifficulty === 'all' || q.difficulty === selectedDifficulty) {
+                questionQueue.push(index);
+            }
+        });
+
+        if(questionQueue.length === 0) {
+            alert("No questions available for the selected difficulty level.");
+            return;
+        }
+
+        userAnswers = new Array(mcqQuestions.length).fill(null);
+        currentQueueIndex = 0;
+        
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        resetState();
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        
+        document.getElementById('question-text').innerText = "Q" + (currentQueueIndex + 1) + ". " + currentQuestion.question;
+        
+        const badge = document.getElementById('difficulty-badge');
+        badge.innerText = currentQuestion.difficulty || "unrated";
+        badge.className = "badge"; 
+        if(currentQuestion.difficulty === 'easy') badge.classList.add('badge-easy');
+        else if(currentQuestion.difficulty === 'medium') badge.classList.add('badge-medium');
+        else if(currentQuestion.difficulty === 'hard') badge.classList.add('badge-hard');
+        
+        const progressPercent = ((currentQueueIndex) / questionQueue.length) * 100;
+        document.getElementById('progress').style.width = progressPercent + "%";
+
+        document.getElementById('prev-btn').style.display = currentQueueIndex > 0 ? 'block' : 'none';
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        currentQuestion.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('option-btn');
+            button.onclick = () => selectAnswer(index, button);
+            container.appendChild(button);
+        });
+
+        if (userAnswers[realIndex] !== null) {
+            document.getElementById('timer').innerText = '⏳ Saved Answer';
+            restoreAnswerState();
+        } else {
+            startTimer();
+        }
+    }
+
+    function resetState() {
+        clearInterval(timer);
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('explanation').style.display = 'none';
+        document.getElementById('timer').innerText = '';
+    }
+
+    function startTimer() {
+        let timeLeft = timePerQuestion;
+        document.getElementById('timer').innerText = `⏳ ${timeLeft}s`;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = `⏳ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                let realIndex = questionQueue[currentQueueIndex];
+                userAnswers[realIndex] = -1; 
+                playSound('wrong');
+                restoreAnswerState();
+            }
+        }, 1000);
+    }
+
+    function selectAnswer(selectedIndex, btn) {
+        clearInterval(timer);
+        let realIndex = questionQueue[currentQueueIndex];
+        userAnswers[realIndex] = selectedIndex;
+        
+        const currentQuestion = mcqQuestions[realIndex];
+        if (selectedIndex === currentQuestion.correct) {
+            playSound('correct');
+        } else {
+            playSound('wrong');
+        }
+
+        restoreAnswerState();
+    }
+
+    function restoreAnswerState() {
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        const correctIndex = currentQuestion.correct;
+        const answeredIndex = userAnswers[realIndex];
+        const allButtons = document.querySelectorAll('.option-btn');
+
+        if (answeredIndex !== -1 && answeredIndex !== null) {
+            if (answeredIndex === correctIndex) {
+                allButtons[answeredIndex].classList.add('correct');
+            } else {
+                allButtons[answeredIndex].classList.add('wrong');
+                allButtons[correctIndex].classList.add('correct');
+            }
+        } else if (answeredIndex === -1) {
+            allButtons[correctIndex].classList.add('correct');
+        }
+
+        disableOptions();
+        showExplanation();
+        
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'block';
+        nextBtn.innerText = (currentQueueIndex === questionQueue.length - 1) ? "Finish Exam 🏁" : "Next Question ➡️";
+    }
+
+    function disableOptions() {
+        const allButtons = document.querySelectorAll('.option-btn');
+        allButtons.forEach(button => button.classList.add('disabled'));
+    }
+
+    function showExplanation() {
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        document.getElementById('explanation-text').innerText = currentQuestion.explanation;
+        document.getElementById('explanation').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentQueueIndex < questionQueue.length - 1) {
+            currentQueueIndex++;
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQueueIndex > 0) {
+            currentQueueIndex--;
+            loadQuestion();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        let finalScore = 0;
+        let wrongIndices = [];
+        
+        questionQueue.forEach((realIndex) => {
+            if (userAnswers[realIndex] === mcqQuestions[realIndex].correct) {
+                finalScore++;
+            } else {
+                wrongIndices.push(realIndex);
+            }
+        });
+
+        const percentage = Math.round((finalScore / questionQueue.length) * 100);
+        document.getElementById('final-score').innerText = percentage + "%";
+        
+        let rank = "Fail (راسب)";
+        if (percentage >= 90) rank = "Excellent (ممتاز) 🌟";
+        else if (percentage >= 80) rank = "Very Good (جيد جداً) 👏";
+        else if (percentage >= 65) rank = "Good (جيد) 👍";
+        else if (percentage >= 50) rank = "Pass (مقبول) 😐";
+        
+        document.getElementById('rank-text').innerText = rank;
+
+        const retryContainer = document.getElementById('retry-container');
+        if (wrongIndices.length > 0) {
+            retryContainer.style.display = 'block';
+            document.getElementById('retry-btn').innerText = `أعد محاولة الأسئلة الخاطئة (${wrongIndices.length}) 🔄`;
+            window.currentWrongIndices = wrongIndices;
+        } else {
+            retryContainer.style.display = 'none';
+        }
+    }
+
+    function retryMistakes() {
+        questionQueue = window.currentWrongIndices;
+        currentQueueIndex = 0;
+        
+        questionQueue.forEach(idx => userAnswers[idx] = null);
+        
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function playSound(type) {
+        const id = type === 'correct' ? 'sound-correct' : 'sound-wrong';
+        document.getElementById(id).play().catch(e => {});
+    }
+</script>
+</body>
+</html>
